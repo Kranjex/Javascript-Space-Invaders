@@ -66,3 +66,29 @@ body {
   transition: left 0.3s ease-out;
   transform: translateX(-56.25px);
 }
+
+@media only screen and (max-width: 1920px) {
+  #gameScreen {
+    width: 750px;
+    height: 450px;
+    padding: 90px;
+  }
+
+  .smallScreen {
+    width: 6.5vw;
+    height: 5vh;
+    font-size: 10px;
+  }
+
+  .invader {
+    width: 47px;
+    height: 33.5px;
+    margin: 5px;
+  }
+
+  .ship {
+    width: 56.25px;
+    height: 75px;
+    bottom: 25px;
+  }
+}
