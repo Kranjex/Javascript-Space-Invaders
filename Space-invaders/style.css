@@ -1,0 +1,68 @@
+*,
+*::after,
+*::before {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-image: url(./img/background.jpg);
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100vw;
+  height: 100vh;
+}
+
+#gameScreen {
+  width: 1500px;
+  height: 900px;
+  background: black;
+  padding: 0 180px 0;
+  position: relative;
+}
+
+.smallScreen {
+  width: 13vw;
+  height: 10vh;
+  background: rgba(150, 150, 150, 0.8);
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Helvetica;
+  font-size: 20px;
+}
+
+#restartButton {
+  position: absolute;
+  left: 50%;
+  bottom: 2%;
+  transform: translate(-50%, -5%);
+  cursor: pointer;
+  border: none;
+}
+
+.invader {
+  background-image: url(img/alien.png);
+  background-size: cover;
+  margin: 10px;
+  width: 94px;
+  height: 67px;
+  position: absolute;
+  left: 0;
+  transition: left 0.3s ease;
+}
+
+.ship {
+  background-image: url(img/f22-raptor.png);
+  background-size: cover;
+  width: 112.5px;
+  height: 150px;
+  position: absolute;
+  bottom: 50px;
+  transition: left 0.3s ease-out;
+  transform: translateX(-56.25px);
+}
