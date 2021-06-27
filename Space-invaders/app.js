@@ -3,6 +3,7 @@ const gameScreen = document.getElementById('gameScreen');
 const restartBtn = document.getElementById('restartButton');
 const spaceship = document.querySelector('.ship');
 const restartButton = document.getElementById('restartButton');
+let DIRECTION = 1;
 // MEDIA QUERY
 var media = window.matchMedia('(max-width: 1920px)');
 if (media.matches) {
@@ -33,10 +34,8 @@ if (media.matches) {
 
 window.onload = () => {
   console.log(GAME, INVADER);
-  // init functions
-  // Alien spawn function
 
-  // invader spawn function = (x,) =>
+  // init functions
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 10; j++) {
       const invaderPlaceholder = document.createElement('div');
@@ -51,20 +50,40 @@ window.onload = () => {
     }
   }
   const invaders = Array.from(document.querySelectorAll('.invader'));
-  const invaderLeft = window
-    .getComputedStyle(invaders[0], null)
-    .getPropertyValue('left');
-  console.log(invaderLeft);
-  console.log(invaders);
 
   // Invaders movement system
-  const moving = setInterval(function () {
-    for (let n = 0; n < 30; n++) {
-      // invader.style.left = `${parseInt(invader.style.left) + 50}px`;
-      invaders[n].style.left = `${parseInt(invaders[n].style.left) + 50}px`;
-      console.log('invaders are comming!');
+  const moveInvaders = setInterval(function () {
+    moveLateral();
+    if (parseInt(invaders[0].style.left) === 0) {
+      moveDown();
+      DIRECTION = 1;
+    } else if (parseInt(invaders[0].style.left) === 250) {
+      moveDown();
+      DIRECTION = -1;
+    }
+    if (parseInt(invaders[20].style.top) > GAME.HEIGHT - INVADER.HEIGHT) {
+      clearInterval(moveInvaders);
+      alert('GAME OVER');
     }
   }, 1000);
+
+  function moveLateral() {
+    for (let n = 0; n < 30; n++) {
+      invaders[n].style.left = `${
+        parseInt(invaders[n].style.left) + 50 * DIRECTION
+      }px`;
+      console.log('invaders are comming!');
+    }
+  }
+  function moveDown() {
+    setTimeout(function () {
+      for (let n = 0; n < 30; n++) {
+        invaders[n].style.top = `${
+          parseInt(invaders[n].style.top) + INVADER.HEIGHT
+        }px`;
+      }
+    }, 500);
+  }
 
   // Ship movement system
   let spaceshipLeft = window
@@ -80,22 +99,22 @@ window.onload = () => {
         if (parseInt(spaceship.style.left) % GAME.WIDTH !== 0) {
           // console.log('Moving left');
           style.left = `${parseInt(style.left) - 20}px`;
-          //style.rotateY = 'rotateX(-45deg)';
+          // style.transform = 'rotateX(-45deg)';
         } else if (parseInt(spaceship.style.left) === 0) {
           console.log('You hit left border');
           style.left = `${parseInt(style.left) + 20}px`;
         }
-        //style.rotateY = 'rotateX(0deg)';
+        // style.transform = 'rotateX(0deg)';
         break;
       // Moving in right direction
       case 'ArrowRight':
         if (parseInt(spaceship.style.left) % GAME.WIDTH !== 0) {
-          //style.rotateY = 'rotateX(45deg)';
+          // style.transform = 'rotateX(45deg)';
           style.left = `${parseInt(style.left) + 20}px`;
         } else if (parseInt(spaceship.style.left) === GAME.WIDTH) {
           style.left = `${parseInt(style.left) - 20}px`;
         }
-        //style.transform = 'rotateX(0deg)';
+        // style.transform = 'rotateX(0deg)';
         break;
     }
   });
