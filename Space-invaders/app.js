@@ -2,34 +2,37 @@
 const gameScreen = document.getElementById('gameScreen');
 const restartBtn = document.getElementById('restartButton');
 const spaceship = document.querySelector('.ship');
+const restartButton = document.getElementById('restartButton');
 // MEDIA QUERY
 var media = window.matchMedia('(max-width: 1920px)');
 if (media.matches) {
   // Game screen measurements
-  var GAME_WIDTH = 750;
-  var GAME_HEIGHT = 450;
+  var GAME = {
+    WIDTH: 750,
+    HEIGHT: 450,
+  };
   // Invader measurements
-  var INVADER_WIDTH = 47;
-  var INVADER_HEIGHT = 33.5;
-  var INVADER_MARGIN = 5;
+  var INVADER = {
+    WIDTH: 47,
+    HEIGHT: 33.5,
+    MARGIN: 5,
+  };
 } else {
   // Game screen measurements
-  var GAME_WIDTH = 1500;
-  var GAME_HEIGHT = 900;
+  var GAME = {
+    WIDTH: 1500,
+    HEIGHT: 900,
+  };
   // Invader measurements
-  var INVADER_WIDTH = 94;
-  var INVADER_HEIGHT = 67;
-  var INVADER_MARGIN = 10;
+  var INVADER = {
+    WIDTH: 94,
+    HEIGHT: 67,
+    MARGIN: 10,
+  };
 }
 
 window.onload = () => {
-  console.log(
-    GAME_WIDTH,
-    GAME_HEIGHT,
-    INVADER_WIDTH,
-    INVADER_HEIGHT,
-    INVADER_MARGIN
-  );
+  console.log(GAME, INVADER);
   // init functions
   // Alien spawn function
 
@@ -39,43 +42,46 @@ window.onload = () => {
       const invaderPlaceholder = document.createElement('div');
       invaderPlaceholder.classList.add('invader');
       invaderPlaceholder.style.left = `${
-        j * (INVADER_WIDTH + INVADER_MARGIN)
+        j * (INVADER.WIDTH + INVADER.MARGIN)
       }px`;
       invaderPlaceholder.style.top = `${
-        i * (INVADER_HEIGHT + INVADER_MARGIN)
+        i * (INVADER.HEIGHT + INVADER.MARGIN)
       }px`;
       gameScreen.appendChild(invaderPlaceholder);
     }
   }
-  const invaders = document.querySelectorAll('.invader');
+  const invaders = Array.from(document.querySelectorAll('.invader'));
   const invaderLeft = window
     .getComputedStyle(invaders[0], null)
     .getPropertyValue('left');
   console.log(invaderLeft);
+  console.log(invaders);
 
   // Invaders movement system
-  function moveInvaders(element) {
-    setInterval(() => {
+  const moving = setInterval(function () {
+    for (let n = 0; n < 30; n++) {
       // invader.style.left = `${parseInt(invader.style.left) + 50}px`;
-      element.offsetLeft = `${parseInt(element.offsetLeft) + 50}px`;
+      invaders[n].style.left = `${parseInt(invaders[n].style.left) + 50}px`;
       console.log('invaders are comming!');
-    }, 500);
-  }
-
-  // invaders.forEach(moveInvaders(invaders));
-
-  // const movePedri = setInterval(moveInvaders(invaders), 500);
+    }
+  }, 1000);
 
   // Ship movement system
+  let spaceshipLeft = window
+    .getComputedStyle(spaceship, null)
+    .getPropertyValue('left');
+  console.log(spaceshipLeft);
+
   window.addEventListener('keydown', (e) => {
     const { style } = spaceship;
     switch (e.key) {
       // Moving in left direction
       case 'ArrowLeft':
-        if (parseInt(style.left) % GAME_WIDTH !== 0) {
+        if (parseInt(spaceship.style.left) % GAME.WIDTH !== 0) {
+          // console.log('Moving left');
           style.left = `${parseInt(style.left) - 20}px`;
           //style.rotateY = 'rotateX(-45deg)';
-        } else if (parseInt(style.left) === 0) {
+        } else if (parseInt(spaceship.style.left) === 0) {
           console.log('You hit left border');
           style.left = `${parseInt(style.left) + 20}px`;
         }
@@ -83,16 +89,18 @@ window.onload = () => {
         break;
       // Moving in right direction
       case 'ArrowRight':
-        if (parseInt(style.left) % GAME_WIDTH !== 0) {
+        if (parseInt(spaceship.style.left) % GAME.WIDTH !== 0) {
           //style.rotateY = 'rotateX(45deg)';
           style.left = `${parseInt(style.left) + 20}px`;
-        } else if (parseInt(style.left) === 1500) {
+        } else if (parseInt(spaceship.style.left) === GAME.WIDTH) {
           style.left = `${parseInt(style.left) - 20}px`;
         }
         //style.transform = 'rotateX(0deg)';
         break;
     }
   });
+
+  // restartButton.addEventListener('click', clearInterval(moving));
 };
 
 // // Rockets controlls

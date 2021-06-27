@@ -22,6 +22,7 @@ body {
   background: black;
   padding: 0 180px 0;
   position: relative;
+  overflow: hidden;
 }
 
 .smallScreen {
@@ -65,6 +66,7 @@ body {
   bottom: 50px;
   transition: left 0.3s ease-out;
   transform: translateX(-56.25px);
+  left: 750px;
 }
 
 @media only screen and (max-width: 1920px) {
@@ -84,11 +86,17 @@ body {
     width: 47px;
     height: 33.5px;
     margin: 5px;
+    position: absolute;
+    left: 0;
   }
 
   .ship {
     width: 56.25px;
     height: 75px;
     bottom: 25px;
+    position: absolute;
+    transition: left 0.3s ease-out;
+    transform: translateX(-28.125px);
+    left: 375px;
   }
 }
