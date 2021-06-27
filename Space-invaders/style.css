@@ -17,7 +17,7 @@ body {
 }
 
 #gameScreen {
-  width: 1500px;
+  width: 1550px;
   height: 900px;
   background: black;
   padding: 0 180px 0;
@@ -71,7 +71,7 @@ body {
 
 @media only screen and (max-width: 1920px) {
   #gameScreen {
-    width: 750px;
+    width: 775px;
     height: 450px;
     padding: 90px;
   }

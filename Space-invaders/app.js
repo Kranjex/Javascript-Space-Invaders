@@ -9,8 +9,10 @@ var media = window.matchMedia('(max-width: 1920px)');
 if (media.matches) {
   // Game screen measurements
   var GAME = {
-    WIDTH: 750,
+    WIDTH: 775,
     HEIGHT: 450,
+    CHECKPOINT: 250,
+    DISTANCE: 50,
   };
   // Invader measurements
   var INVADER = {
@@ -21,8 +23,10 @@ if (media.matches) {
 } else {
   // Game screen measurements
   var GAME = {
-    WIDTH: 1500,
+    WIDTH: 1550,
     HEIGHT: 900,
+    CHECKPOINT: 500,
+    DISTANCE: 100,
   };
   // Invader measurements
   var INVADER = {
@@ -57,7 +61,7 @@ window.onload = () => {
     if (parseInt(invaders[0].style.left) === 0) {
       moveDown();
       DIRECTION = 1;
-    } else if (parseInt(invaders[0].style.left) === 250) {
+    } else if (parseInt(invaders[0].style.left) === GAME.CHECKPOINT) {
       moveDown();
       DIRECTION = -1;
     }
@@ -70,7 +74,7 @@ window.onload = () => {
   function moveLateral() {
     for (let n = 0; n < 30; n++) {
       invaders[n].style.left = `${
-        parseInt(invaders[n].style.left) + 50 * DIRECTION
+        parseInt(invaders[n].style.left) + GAME.DISTANCE * DIRECTION
       }px`;
       console.log('invaders are comming!');
     }
