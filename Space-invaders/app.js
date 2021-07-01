@@ -3,43 +3,34 @@ const gameScreen = document.getElementById('gameScreen');
 const restartBtn = document.getElementById('restartButton');
 const spaceship = document.querySelector('.ship');
 const restartButton = document.getElementById('restartButton');
-let DIRECTION = 1;
-// MEDIA QUERY
+let DIRECTION = 1; // Positive number means moving in right direction, negative value means in other (left) direction
+
+// Variable for media check
 var media = window.matchMedia('(max-width: 1920px)');
-if (media.matches) {
-  // Game screen measurements
-  var GAME = {
-    WIDTH: 775,
-    HEIGHT: 450,
-    CHECKPOINT: 250,
-    DISTANCE: 50,
-  };
-  // Invader measurements
-  var INVADER = {
-    WIDTH: 47,
-    HEIGHT: 33.5,
-    MARGIN: 5,
-  };
-} else {
-  // Game screen measurements
-  var GAME = {
-    WIDTH: 1550,
-    HEIGHT: 900,
-    CHECKPOINT: 500,
-    DISTANCE: 100,
-  };
-  // Invader measurements
-  var INVADER = {
-    WIDTH: 94,
-    HEIGHT: 67,
-    MARGIN: 10,
-  };
-}
+// Game screen measurements
+var GAME = {
+  WIDTH: parseInt(
+    window.getComputedStyle(gameScreen, null).getPropertyValue('width')
+    // or media.matches ? 770 : 1540,
+  ),
+  HEIGHT: parseInt(
+    window.getComputedStyle(gameScreen, null).getPropertyValue('height')
+    // or media.matches ? 450 : 900,
+  ),
+  CHECKPOINT: media.matches ? 710 : 1420,
+  DISTANCE: media.matches ? 50 : 100,
+};
+// Invader measurements
+var INVADER = {
+  WIDTH: media.matches ? 47 : 94,
+  HEIGHT: media.matches ? 33.5 : 67,
+  MARGIN: media.matches ? 5 : 10,
+};
 
 window.onload = () => {
   console.log(GAME, INVADER);
-
   // init functions
+  // Invader spawn system
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 10; j++) {
       const invaderPlaceholder = document.createElement('div');
@@ -53,35 +44,50 @@ window.onload = () => {
       gameScreen.appendChild(invaderPlaceholder);
     }
   }
+  // Makes an array of invaders for movement system.
   const invaders = Array.from(document.querySelectorAll('.invader'));
 
   // Invaders movement system
+  // Popravi funkcijo, da se igra konča ob dotiku spaceshipa in invaderja
   const moveInvaders = setInterval(function () {
     moveLateral();
-    if (parseInt(invaders[0].style.left) === 0) {
-      moveDown();
-      DIRECTION = 1;
-    } else if (parseInt(invaders[0].style.left) === GAME.CHECKPOINT) {
-      moveDown();
-      DIRECTION = -1;
-    }
-    if (parseInt(invaders[20].style.top) > GAME.HEIGHT - INVADER.HEIGHT) {
-      clearInterval(moveInvaders);
-      alert('GAME OVER');
+    for (let m = 0; m < invaders.length; m++) {
+      if (parseInt(invaders[m].style.left) === 0) {
+        moveDown();
+        DIRECTION = 1;
+        break;
+      } else if (parseInt(invaders[m].style.left) > GAME.CHECKPOINT) {
+        moveDown();
+        DIRECTION = -1;
+        break;
+      }
+      if (parseInt(invaders[m].style.top) > GAME.HEIGHT - INVADER.HEIGHT) {
+        clearInterval(moveInvaders);
+        alert('GAME OVER');
+        break;
+      }
+      // if (
+      //   parseInt(invaders[m].style.top) === parseInt(spaceship.style.top) &&
+      //   parseInt(invaders[m].style.left) === parseInt(spaceship.style.left)
+      // ) {
+      //   clearInterval(moveInvaders);
+      //   alert('GAME OVER');
+      //   break;
+      // }
     }
   }, 1000);
 
+  // Movement functions
   function moveLateral() {
-    for (let n = 0; n < 30; n++) {
+    for (let n = 0; n < invaders.length; n++) {
       invaders[n].style.left = `${
         parseInt(invaders[n].style.left) + GAME.DISTANCE * DIRECTION
       }px`;
-      console.log('invaders are comming!');
     }
   }
   function moveDown() {
     setTimeout(function () {
-      for (let n = 0; n < 30; n++) {
+      for (let n = 0; n < invaders.length; n++) {
         invaders[n].style.top = `${
           parseInt(invaders[n].style.top) + INVADER.HEIGHT
         }px`;
@@ -90,41 +96,44 @@ window.onload = () => {
   }
 
   // Ship movement system
-  let spaceshipLeft = window
-    .getComputedStyle(spaceship, null)
-    .getPropertyValue('left');
-  console.log(spaceshipLeft);
-
   window.addEventListener('keydown', (e) => {
     const { style } = spaceship;
     switch (e.key) {
       // Moving in left direction
       case 'ArrowLeft':
         if (parseInt(spaceship.style.left) % GAME.WIDTH !== 0) {
-          // console.log('Moving left');
           style.left = `${parseInt(style.left) - 20}px`;
-          // style.transform = 'rotateX(-45deg)';
+          spaceship.style.transform = 'rotateZ(-45deg)';
         } else if (parseInt(spaceship.style.left) === 0) {
           console.log('You hit left border');
           style.left = `${parseInt(style.left) + 20}px`;
         }
-        // style.transform = 'rotateX(0deg)';
+        spaceship.style.transform = 'rotateZ(0deg)';
         break;
       // Moving in right direction
       case 'ArrowRight':
         if (parseInt(spaceship.style.left) % GAME.WIDTH !== 0) {
-          // style.transform = 'rotateX(45deg)';
+          spaceship.style.transform = 'rotateZ(45deg)';
           style.left = `${parseInt(style.left) + 20}px`;
         } else if (parseInt(spaceship.style.left) === GAME.WIDTH) {
           style.left = `${parseInt(style.left) - 20}px`;
         }
-        // style.transform = 'rotateX(0deg)';
+        spaceship.style.transform = 'rotateZ(0deg)';
         break;
     }
   });
 
-  // restartButton.addEventListener('click', clearInterval(moving));
+  // Spaceship's shooting system
+  window.addEventListener('keydown', (e) => {
+    switch (e.key) {
+      case ' ':
+        console.log('Bang Bang');
+        break;
+    }
+  });
 };
+
+// restartButton.addEventListener('click', clearInterval(moveInvaders));
 
 // // Rockets controlls
 // case 'Space':
