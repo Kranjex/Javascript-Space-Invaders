@@ -20,6 +20,17 @@ var GAME = {
   CHECKPOINT: media.matches ? 710 : 1420,
   DISTANCE: media.matches ? 50 : 100,
 };
+
+var SPACESHIP = {
+  WIDTH: parseInt(
+    window.getComputedStyle(spaceship, null).getPropertyValue('width')
+    // or media.matches ?
+  ),
+  HEIGHT: parseInt(
+    window.getComputedStyle(spaceship, null).getPropertyValue('height')
+    // or media.matches ?
+  ),
+};
 // Invader measurements
 var INVADER = {
   WIDTH: media.matches ? 47 : 94,
@@ -28,7 +39,7 @@ var INVADER = {
 };
 
 window.onload = () => {
-  console.log(GAME, INVADER);
+  console.log(GAME, INVADER, SPACESHIP);
   // init functions
   // Invader spawn system
   for (let i = 0; i < 3; i++) {
@@ -101,24 +112,28 @@ window.onload = () => {
     switch (e.key) {
       // Moving in left direction
       case 'ArrowLeft':
-        if (parseInt(spaceship.style.left) % GAME.WIDTH !== 0) {
+        console.log(style.left);
+        if (parseInt(spaceship.style.left) / GAME.WIDTH > 0) {
           style.left = `${parseInt(style.left) - 20}px`;
-          spaceship.style.transform = 'rotateZ(-45deg)';
-        } else if (parseInt(spaceship.style.left) === 0) {
+          spaceship.style.transform = 'rotate(-45deg)';
+        } else if (parseInt(spaceship.style.left) < 0) {
           console.log('You hit left border');
           style.left = `${parseInt(style.left) + 20}px`;
         }
-        spaceship.style.transform = 'rotateZ(0deg)';
+        spaceship.style.transform = 'rotate(0deg)';
         break;
       // Moving in right direction
       case 'ArrowRight':
-        if (parseInt(spaceship.style.left) % GAME.WIDTH !== 0) {
-          spaceship.style.transform = 'rotateZ(45deg)';
+        if (parseInt(spaceship.style.left) < GAME.WIDTH - SPACESHIP.WIDTH) {
+          spaceship.style.transform = 'rotate(45deg)';
           style.left = `${parseInt(style.left) + 20}px`;
-        } else if (parseInt(spaceship.style.left) === GAME.WIDTH) {
+        } else if (
+          parseInt(spaceship.style.left) >
+          GAME.WIDTH - SPACESHIP.WIDTH
+        ) {
           style.left = `${parseInt(style.left) - 20}px`;
         }
-        spaceship.style.transform = 'rotateZ(0deg)';
+        spaceship.style.transform = 'rotate(0deg)';
         break;
     }
   });
@@ -133,7 +148,10 @@ window.onload = () => {
   });
 };
 
-// restartButton.addEventListener('click', clearInterval(moveInvaders));
+// Restart button which refreshes the page (reloads game)
+restartButton.addEventListener('click', () => {
+  location.reload();
+});
 
 // // Rockets controlls
 // case 'Space':
