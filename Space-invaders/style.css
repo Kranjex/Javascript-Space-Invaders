@@ -82,7 +82,7 @@ body {
   position: absolute;
   left: 0;
   bottom: 0;
-  transition: bottom 0.3s linear;
+  transition: bottom 0.1s linear;
 }
 
 @media only screen and (max-width: 1920px) {
@@ -93,10 +93,14 @@ body {
   }
 
   .smallScreen {
-    width: 6.5vw;
-    height: 5vh;
-    font-size: 10px;
+    width: 8vw;
+    height: 6vh;
+    font-size: 2rem;
     border-radius: 1.5rem;
+  }
+
+  #restartButton {
+    font-size: 1.2rem;
   }
 
   .invader {

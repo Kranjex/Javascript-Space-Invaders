@@ -3,6 +3,8 @@ const gameScreen = document.getElementById('gameScreen');
 const restartBtn = document.getElementById('restartButton');
 const spaceship = document.querySelector('.ship');
 const restartButton = document.getElementById('restartButton');
+const stopwatch = document.getElementById('stopwatch');
+const scoreboard = document.getElementById('scoreboard');
 let DIRECTION = 1; // Positive number means moving in right direction, negative value means in other (left) direction
 
 // Variable for media check
@@ -19,7 +21,8 @@ var GAME = {
   ),
   CHECKPOINT: media.matches ? 710 : 1420,
   DISTANCE: media.matches ? 50 : 100,
-  LOSECONDITION: media.matches ? 345 : 690,
+  LOSECONDITION: media.matches ? 335 : 690,
+  SPEED: media.matches ? 30 : 60,
 };
 
 var SPACESHIP = {
@@ -45,8 +48,28 @@ var MISSILE = {
 };
 
 window.onload = () => {
-  console.log(GAME, INVADER, SPACESHIP);
-  console.log(GAME.HEIGHT - INVADER.HEIGHT);
+  // Stopwatch system
+  let seconds = 1;
+  let tenSeconds = 0;
+  let minutes = 0;
+  let tenMinutes = 0;
+  const time = setInterval(() => {
+    stopwatch.innerText = `${tenMinutes}${minutes}:${tenSeconds}${seconds}`;
+    seconds++;
+    if (seconds > 9) {
+      tenSeconds++;
+      seconds = 0;
+    }
+    if (tenSeconds > 5) {
+      minutes++;
+      tenSeconds = 0;
+    }
+    if (minutes > 9) {
+      tenMinutes++;
+      minutes = 0;
+    }
+  }, 1000);
+
   // init functions
   // Invader spawn system
   for (let i = 0; i < 3; i++) {
@@ -64,8 +87,13 @@ window.onload = () => {
   }
   // Makes an array of invaders for movement system.
   const invaders = Array.from(document.querySelectorAll('.invader'));
+  // Initial scoreboard score
+  scoreboard.innerText = invaders.length;
 
   // Invaders movement system
+  // Popravi spremenljivko once
+  let once = true;
+  console.log(once);
   const moveInvaders = setInterval(function () {
     moveLateral();
     for (let m = 0; m < invaders.length; m++) {
@@ -78,12 +106,16 @@ window.onload = () => {
         DIRECTION = -1;
         break;
       }
-      // Spremenljivka LOSECONDITION ne deluje???
-      if (parseInt(invaders[m].style.top) === 690) {
+      if (parseInt(invaders[m].style.top) >= GAME.LOSECONDITION) {
         clearInterval(moveInvaders);
-        alert('GAME OVER');
+        alert('GAME OVER\nYou have lost.');
         break;
       }
+    }
+    if (invaders.length === 0) {
+      alert('GAME OVER\nYou have won.');
+      var once = false;
+      clearInterval(time);
     }
   }, 1000);
 
@@ -142,37 +174,36 @@ window.onload = () => {
   const missileArray = [];
 
   // Spaceship's shooting system
-  // Dodaj array zaradi preverjanja posamezne rakete => setInterval( for missile[n] { if missile[n] === GAME.HEIGHT ali se dotika INVADER potem izbriši })
+  // Izboljšaj sistem, da bo vsaka raketa letela z enako hitrostjo => setInterval za vsako rakteo posebej
   window.addEventListener('keydown', (e) => {
     const { style } = spaceship;
     switch (e.key) {
       case ' ':
-        console.log('Bang Bang');
         missileSpawn();
         const missile = document.querySelector('.missile');
-        console.log(parseInt(missile.style.bottom), GAME.HEIGHT);
         // Missile movement system
         var missileMove = setInterval(() => {
-          if (parseInt(missile.style.bottom) < GAME.HEIGHT) {
-            missile.style.bottom = `${
-              parseInt(missile.style.bottom) + GAME.DISTANCE * 5
-            }px`;
-          } else {
-            console.log('neka ne dela');
-            clearInterval(missileMove);
-            document.removeChild(missile);
-            missileArray.shift();
+          for (let n = 0; n < missileArray.length; n++) {
+            if (parseInt(missileArray[n].style.bottom) >= GAME.HEIGHT) {
+              clearInterval(missileMove);
+              missileArray.shift();
+              missile.remove();
+              // gameScreen.removeChild(gameScreen);
+            } else if (parseInt(missileArray[n].style.bottom) < GAME.HEIGHT) {
+              // console.log(collisionCheck(missileArray[n], invaders));
+              collisionCheck(missileArray[n], invaders, missileMove);
+              missileArray[n].style.bottom = `${
+                parseInt(missileArray[n].style.bottom) + GAME.SPEED
+              }px`;
+            }
           }
-        }, 200);
+        }, 50);
         break;
     }
   });
 
   // Missile spawn function
   function missileSpawn() {
-    // console.log('missile spawned!');
-    // console.log(parseInt(spaceship.style.left));
-    // console.log(spaceshipBottom);
     const missile = document.createElement('div');
     missile.classList.add('missile');
     missile.style.left = `${
@@ -181,6 +212,35 @@ window.onload = () => {
     missile.style.bottom = `${spaceshipBottom + SPACESHIP.HEIGHT}px`;
     gameScreen.appendChild(missile);
     missileArray.push(missile);
+  }
+
+  // Rocket collision system
+  function collisionCheck(missileObject, invadersArray, interval) {
+    const missileCheck = missileObject.getBoundingClientRect();
+    // for (let i = invaders.length - 1; i >= 0; i--) {
+    for (let i = 0; i < invaders.length; i++) {
+      var invaderCheck = invadersArray[i].getBoundingClientRect();
+      const collision = !(
+        missileCheck.right <= invaderCheck.left ||
+        missileCheck.left >= invaderCheck.right ||
+        missileCheck.bottom <= invaderCheck.top ||
+        missileCheck.top >= invaderCheck.bottom
+      );
+      if (collision === true) {
+        missileArray[0].style.display = 'none';
+        missileArray.shift();
+        missileObject.remove();
+        invaders[i].style.backgroundImage = 'url("img/boom.png")';
+        setTimeout(() => {
+          invaders[i].style.display = 'none';
+          gameScreen.removeChild(invaders[i]);
+          invaders.splice(i, 1);
+          scoreboard.innerText = invaders.length;
+          clearInterval(interval);
+        }, 200);
+        // missile.remove();
+      }
+    }
   }
 };
 
