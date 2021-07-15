@@ -5,6 +5,8 @@ const spaceship = document.querySelector('.ship');
 const restartButton = document.getElementById('restartButton');
 const stopwatch = document.getElementById('stopwatch');
 const scoreboard = document.getElementById('scoreboard');
+const launch = new Audio('audio/missileLaunch.mp3');
+const explosion = new Audio('audio/explosion.mp3');
 let DIRECTION = 1; // Positive number means moving in right direction, negative value means in other (left) direction
 
 // Variable for media check
@@ -185,6 +187,7 @@ window.onload = () => {
     if (ready === true) {
       switch (e.key) {
         case ' ':
+          launch.cloneNode(true).play();
           missileSpawn();
           const missile = document.querySelector('.missile');
           // Missile movement system
@@ -241,6 +244,7 @@ window.onload = () => {
         missileArray.shift();
         missileObject.remove();
         invaders[i].style.backgroundImage = 'url("img/boom.png")';
+        explosion.cloneNode(true).play();
         setTimeout(() => {
           invaders[i].style.display = 'none';
           gameScreen.removeChild(invaders[i]);
