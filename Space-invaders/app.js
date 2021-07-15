@@ -87,11 +87,11 @@ window.onload = () => {
   }
   // Makes an array of invaders for movement system.
   const invaders = Array.from(document.querySelectorAll('.invader'));
+
   // Initial scoreboard score
   scoreboard.innerText = invaders.length;
 
   // Invaders movement system
-  // Popravi spremenljivko once
   let once = true;
   console.log(once);
   const moveInvaders = setInterval(function () {
@@ -108,13 +108,17 @@ window.onload = () => {
       }
       if (parseInt(invaders[m].style.top) >= GAME.LOSECONDITION) {
         clearInterval(moveInvaders);
-        alert('GAME OVER\nYou have lost.');
+        alert(
+          'GAME OVER\n\nYou have lost.\nIf you want to continue playing the game click restart button or press F5 key.'
+        );
         break;
       }
     }
-    if (invaders.length === 0) {
-      alert('GAME OVER\nYou have won.');
-      var once = false;
+    if (invaders.length === 0 && once === true) {
+      alert(
+        'GAME OVER\n\nYou have won.\nIf you want to continue playing the game click restart button or press F5 key.'
+      );
+      once = false;
       clearInterval(time);
     }
   }, 1000);
@@ -174,36 +178,42 @@ window.onload = () => {
   const missileArray = [];
 
   // Spaceship's shooting system
-  // Izboljšaj sistem, da bo vsaka raketa letela z enako hitrostjo => setInterval za vsako rakteo posebej
+  var ready = true;
   window.addEventListener('keydown', (e) => {
     const { style } = spaceship;
-    switch (e.key) {
-      case ' ':
-        missileSpawn();
-        const missile = document.querySelector('.missile');
-        // Missile movement system
-        var missileMove = setInterval(() => {
-          for (let n = 0; n < missileArray.length; n++) {
-            if (parseInt(missileArray[n].style.bottom) >= GAME.HEIGHT) {
-              clearInterval(missileMove);
-              missileArray.shift();
-              missile.remove();
-              // gameScreen.removeChild(gameScreen);
-            } else if (parseInt(missileArray[n].style.bottom) < GAME.HEIGHT) {
-              // console.log(collisionCheck(missileArray[n], invaders));
-              collisionCheck(missileArray[n], invaders, missileMove);
-              missileArray[n].style.bottom = `${
-                parseInt(missileArray[n].style.bottom) + GAME.SPEED
-              }px`;
+    if (ready === true) {
+      switch (e.key) {
+        case ' ':
+          missileSpawn();
+          const missile = document.querySelector('.missile');
+          // Missile movement system
+          var missileMove = setInterval(() => {
+            for (let n = 0; n < missileArray.length; n++) {
+              if (parseInt(missileArray[n].style.bottom) >= GAME.HEIGHT) {
+                clearInterval(missileMove);
+                missileArray.shift();
+                missile.remove();
+                // gameScreen.removeChild(gameScreen);
+              } else if (parseInt(missileArray[n].style.bottom) < GAME.HEIGHT) {
+                // console.log(collisionCheck(missileArray[n], invaders));
+                collisionCheck(missileArray[n], invaders, missileMove);
+                missileArray[n].style.bottom = `${
+                  parseInt(missileArray[n].style.bottom) + GAME.SPEED
+                }px`;
+              }
             }
-          }
-        }, 50);
-        break;
+          }, 50);
+          var reload = setTimeout(() => {
+            ready = true;
+          }, 500);
+          break;
+      }
     }
   });
 
   // Missile spawn function
   function missileSpawn() {
+    ready = false;
     const missile = document.createElement('div');
     missile.classList.add('missile');
     missile.style.left = `${
@@ -214,10 +224,9 @@ window.onload = () => {
     missileArray.push(missile);
   }
 
-  // Rocket collision system
+  // Missile collision system
   function collisionCheck(missileObject, invadersArray, interval) {
     const missileCheck = missileObject.getBoundingClientRect();
-    // for (let i = invaders.length - 1; i >= 0; i--) {
     for (let i = 0; i < invaders.length; i++) {
       var invaderCheck = invadersArray[i].getBoundingClientRect();
       const collision = !(
@@ -238,7 +247,6 @@ window.onload = () => {
           scoreboard.innerText = invaders.length;
           clearInterval(interval);
         }, 200);
-        // missile.remove();
       }
     }
   }
