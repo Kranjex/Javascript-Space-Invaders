@@ -108,6 +108,7 @@ window.onload = () => {
       }
       if (parseInt(invaders[m].style.top) >= GAME.LOSECONDITION) {
         clearInterval(moveInvaders);
+        clearInterval(time);
         alert(
           'GAME OVER\n\nYou have lost.\nIf you want to continue playing the game click restart button or press F5 key.'
         );
